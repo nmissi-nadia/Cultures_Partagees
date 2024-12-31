@@ -65,13 +65,13 @@ INSERT INTO roles (nom) VALUES
 
 -- Insertions des catégories initiales
 INSERT INTO categories (nom, description) VALUES 
-('Peinture', 'Articles sur la peinture, les techniques et les artistes'),
-('Musique', 'Actualités musicales, critiques et découvertes'),
-('Littérature', 'Romans, poésie et analyses littéraires'),
-('Cinéma', 'Critiques de films et actualités du 7e art'),
-('Photographie', 'Art photographique et techniques'),
-('Théâtre', 'Actualités théâtrales et critiques de pièces'),
-('Architecture', 'Design et histoire architecturale');
+('Peinture',1, 'Articles sur la peinture, les techniques et les artistes'),
+('Musique',1, 'Actualités musicales, critiques et découvertes'),
+('Littérature',1, 'Romans, poésie et analyses littéraires'),
+('Cinéma',1, 'Critiques de films et actualités du 7e art'),
+('Photographie',1, 'Art photographique et techniques'),
+('Théâtre',1, 'Actualités théâtrales et critiques de pièces'),
+('Architecture',1, 'Design et histoire architecturale');
 
 -- Création d'un administrateur par défaut (mot de passe: Admin123!)
 INSERT INTO utilisateurs (nom, email, mot_de_passe, role_id) VALUES 
