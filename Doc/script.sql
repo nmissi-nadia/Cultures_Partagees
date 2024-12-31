@@ -1,10 +1,12 @@
 -- Suppression des tables si elles existent déjà
-DROP TABLE IF EXISTS commentaires;
 DROP TABLE IF EXISTS articles;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS utilisateurs;
 DROP TABLE IF EXISTS roles;
-DROP TABLE IF EXISTS sessions;
+
+-- Creation de base de donnees
+create database art_culture;
+use art_culture;
 
 -- Table des rôles
 CREATE TABLE roles (
@@ -15,7 +17,7 @@ CREATE TABLE roles (
 
 -- Table des utilisateurs
 CREATE TABLE utilisateurs (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_user INT PRIMARY KEY AUTO_INCREMENT,
     nom VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     mot_de_passe VARCHAR(255) NOT NULL,
@@ -32,9 +34,11 @@ CREATE TABLE utilisateurs (
 CREATE TABLE categories (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nom VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT,
+    id_admin INT NOT NULL,
+    description_cat TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_admin) REFERENCES utilisateurs(id_user)
 );
 
 -- Table des articles
@@ -146,4 +150,3 @@ SELECT
 FROM categories c
 LEFT JOIN articles a ON c.id = a.categorie_id
 WHERE a.id IS NULL;
-
