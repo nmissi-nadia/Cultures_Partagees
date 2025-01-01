@@ -36,8 +36,14 @@ class User {
         }
     }
 
+    public function getId(): string {
+        return $this->id_user   ;
+    }
     public function getNom(): string {
         return $this->nom;
+    }
+    public function getRole(): string {
+        return $this->role_id;
     }
 
     public function getEmail(): string {

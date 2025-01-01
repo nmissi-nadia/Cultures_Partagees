@@ -1,4 +1,5 @@
 <?php 
+// require_once ("./User.classe.php");
     class Admin extends User {
         public function creerCategorie(PDO $pdo, string $nom, string $description): bool {
             try {

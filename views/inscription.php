@@ -2,15 +2,15 @@
 require_once '../classes/Utilisateur.php';
 require_once '../config/db_connect.php'; 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupération des données du formulaire
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscri'])) {
+    
     $nom = htmlspecialchars(trim($_POST['nom'] ?? ''));
     $email = htmlspecialchars(trim($_POST['email'] ?? ''));
-    $motDePasse = $_POST['mot_de_passe'] ?? '';
-    $confirmMotDePasse = $_POST['confirm_mot_de_passe'] ?? '';
-    $role_id = 3; // Par défaut, rôle utilisateur
+    $motDePasse = $_POST['password'] ?? '';
+    $confirmMotDePasse = $_POST['copass'] ?? '';
+    $role_id = $_POST['role'] ?? ''; // Par défaut, rôle utilisateur
 
-    // Validation des champs
+    
     if (empty($nom) || empty($email) || empty($motDePasse) || empty($confirmMotDePasse)) {
         die('Tous les champs sont requis.');
     }
@@ -28,12 +28,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Création d'une instance de User
-        $user = new User($nom, $email, $motDePasse, $role_id);
-
+        // Détermination de la classe en fonction du rôle
+        $user = null;
+        if ($role_id === 2) { // Rôle Auteur
+            $user = new Auteur($nom, $email, $motDePasse, $role_id);
+        } else { // Rôle Utilisateur par défaut
+            $user = new Utilisateur($nom, $email, $motDePasse, $role_id);
+        }
+    
         // Utilisation de la méthode sInscrire
         if ($user->sInscrire($pdo)) {
             echo 'Inscription réussie. Vous pouvez maintenant vous connecter.';
+            header("Location:./login.php"); 
         } else {
             die('Une erreur est survenue lors de l\'inscription.');
         }
@@ -41,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log('Erreur lors de l\'inscription : ' . $e->getMessage());
         die('Une erreur est survenue. Veuillez réessayer plus tard.');
     }
+    
 } else {
     die('Méthode de requête non autorisée.');
 }

@@ -1,36 +1,61 @@
-<?php 
-    require_once ("../../config/db_connect.php");
-    require_once ("../../classes/User.classe.php");
-    require_once ("../../classes/Utilisateur.php");
-    session_start();
+<?php
+   require_once ("../../config/db_connect.php");
+   require_once ("../../classes/User.classe.php");
+   require_once ("../../classes/Utilisateur.php");
+   require_once ("../../classes/Auteur.php");
+session_start();
 
-    if (!isset($_SESSION['id_user']) && !isset($_SESSION['role_id'])!==3) {
-        header('Location: ./login.php'); 
-        exit();
-    }
-    $utilisateur = new Utilisateur($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['role_id']);
+// Vérification si l'utilisateur est connecté et a le rôle "Auteur"
+echo "<script>console.log('" . $_SESSION['id_user'] . "');</script>";
 
-    // Récupérer les articles
+if (!isset($_SESSION['id_user']) && !isset($_SESSION['role_id'])!==2) { 
+    header('Location: ../login.php'); 
+    exit();
+}
+
+// Inclusion des fichiers nécessaires
+
+
+try {
+    // Instancier l'auteur avec les données de la session
+    $auteur = new Auteur($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['role_id']);
+
+    // Récupérer les articles de l'auteur
     $page = intval($_GET['page'] ?? 1);
     $limit = 6;
-    $data = $utilisateur->AfficherArticles($pdo, $page, $limit);
+    $data = $auteur->AfficherArticlesByAuteur($pdo, $_SESSION['id_user'], $page, $limit);
     $articles = $data['articles'];
     $totalArticles = $data['total'];
     $totalPages = ceil($totalArticles / $limit);
-    
+} catch (PDOException $e) {
+    die('Erreur lors de la récupération des articles : ' . $e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Articles - Plateforme Culturelle</title>
+    <title>Dashboard Auteur</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
-<body class="bg-gray-50">
-    
-     <header class="bg-white shadow-md">
+<style>
+        .header-hidden {
+            transform: translateY(-100%);
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+<body class="bg-gray-100">
+    <!-- En-tête -->
+    <header class="bg-white shadow-md">
         <div class="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-1 text-sm">
             <div class="max-w-7xl mx-auto flex justify-between items-center">
                 <p>Découvrez notre nouvelle section "Art contemporain"</p>
@@ -56,7 +81,6 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="/categories" class="text-gray-700 hover:text-blue-600">Catégories</a>
                     <a href="/articles" class="text-gray-700 hover:text-blue-600">Articles</a>
-                    <a href="/auteurs" class="text-gray-700 hover:text-blue-600">Auteurs</a>
                     <a href="/a-propos" class="text-gray-700 hover:text-blue-600">À propos</a>
                 </div>
 
@@ -79,7 +103,7 @@
                             <a href="/deconnexion" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Déconnexion</a>
                         </div>
                     </div>
-                    <a href="/creer-article" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                    <a href="./auteur.php" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
                         Publier
                     </a>
                 </div>
@@ -99,15 +123,15 @@
                     <a href="/a-propos" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">À propos</a>
                     <hr class="my-2">
                     <a href="/profil" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Mon compte</a>
-                    <a href="/creer-article" class="block px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Publier</a>
+                    <a href="./auteur.php" class="block px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Publier</a>
+                    <a href="../lougout.php" class="block px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Deconnexion</a>
                 </div>
             </div>
         </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Search and Filter Section -->
+    <!-- Contenu principal -->
+    <main class="container max-w-7xl mx-auto my-8 px-4 py-8">
         <div class="mb-8">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
@@ -131,9 +155,12 @@
                 </div>
             </div>
         </div>
+        <span class="mr-4">Bienvenue, <?= htmlspecialchars($_SESSION['nom']) ?></span>
+            <h2 class="text-2xl font-bold">Vos Articles</h2>
+            
 
         <!-- Grille des articles -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="articles-grid">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php if (!empty($articles)): ?>
                 <?php foreach ($articles as $article): ?>
                     <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -153,12 +180,6 @@
                             <p class="text-gray-600 mb-4">
                                 <?= htmlspecialchars(substr($article['excerpt'], 0, 100)) ?>...
                             </p>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-500">Par <?= htmlspecialchars($article['author']) ?></span>
-                                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">
-                                    Lire plus <i class="fas fa-arrow-right ml-1"></i>
-                                </a>
-                            </div>
                         </div>
                     </article>
                 <?php endforeach; ?>
@@ -168,7 +189,7 @@
         </div>
 
         <!-- Pagination -->
-        <div id="pagination" class="flex justify-center mt-6">
+        <div class="flex justify-center mt-6">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                 <a href="?page=<?= $i ?>" 
                    class="px-4 py-2 mx-1 rounded border <?= $i === $page ? 'bg-blue-600 text-white' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white' ?>">
@@ -177,6 +198,8 @@
             <?php endfor; ?>
         </div>
     </main>
+
+    <!-- Pied de page -->
     <footer class="bg-gradient-to-r from-purple-600 to-blue-500 text-white">
         <div class="max-w-7xl mx-auto py-12 px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -240,7 +263,6 @@
             </div>
         </div>
     </footer>
-
     <script>
         // Initialisation des icônes Lucide
         lucide.createIcons();
@@ -284,28 +306,7 @@
             lastScroll = currentScroll;
         });
     </script>
-
-    <style>
-        .header-hidden {
-            transform: translateY(-100%);
-        }
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            transition: transform 0.3s ease-in-out;
-        }
-    </style>
-    <script>
-        
-
-        // Toggle Mobile Menu
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        }
-
-    </script>
 </body>
 </html>
+
+                
