@@ -1,3 +1,23 @@
+<?php
+    require_once ("../../config/db_connect.php");
+    require_once ("../../classes/User.classe.php");
+    require_once ("../../classes/Admin.php");
+
+session_start();
+
+if (!isset($_SESSION['id_user']) || $_SESSION['role_id'] !== 1) {
+    header('Location: ../login.php'); 
+    exit();
+}
+try {
+    // Instanciation de l'administrateur
+    $admin = new Admin($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['id_user']);
+
+    $utilsRole = $admin->utilisateurpaRole($pdo);
+} catch (Exception $e) {
+    die("Erreur : " . $e->getMessage());
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -123,24 +143,51 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
-                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Statut</th>
-                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200" id="table-body">
-                            <!-- Data will be injected here -->
-                        </tbody>
-                    </table>
-                </div>
-
+                <?php if (!empty($utilsRole)): ?>
+                    <?php foreach ($utilsRole as $role => $users): ?>
+                        <div class="overflow-x-auto">
+                        <h3 class="ml-10 text-xl font-semibold text-gray-800 mb-4"><?= htmlspecialchars($role) ?></h3>
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
+                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Statut</th>
+                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200" id="table-body">
+                                <?php foreach ($users as $user): ?>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($user['id_user']) ?></td>
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($user['nom']) ?></td>
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($user['email']) ?></td>
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell"><?= htmlspecialchars($user['date_inscription']) ?></td>
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                <?= $user['status'] === 'actif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
+                                                <?= htmlspecialchars($user['status']) ?>
+                                            </span>
+                                        </td>
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm space-x-3">
+                                            <button name="modififerutilisateur" class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button name="supprimeutilis" class="text-red-600 hover:text-red-900">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <p>Aucun utilisateur trouvé.</p>
+                    <?php endif; ?>
                 <!-- Mobile Pagination -->
                 <div class="flex justify-between items-center p-4 lg:p-6 border-t border-gray-200">
                     <button class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-50">Précédent</button>
@@ -152,11 +199,7 @@
     </main>
 
     <script>
-        const tableData = [
-            { id: 1, name: "John Doe", date: "2024-12-31", status: "Actif" },
-            { id: 2, name: "Jane Smith", date: "2024-12-30", status: "Inactif" },
-            { id: 3, name: "Bob Johnson", date: "2024-12-29", status: "Actif" }
-        ];
+    
 
         // Toggle Mobile Menu
         function toggleMobileMenu() {
@@ -201,25 +244,7 @@
         function populateTable() {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = tableData.map(item => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">#${item.id}</td>
-                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.name}</td>
-                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">${item.date}</td>
-                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            ${item.status === 'Actif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                            ${item.status}
-                        </span>
-                    </td>
-                    <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm space-x-3">
-                        <button class="text-blue-600 hover:text-blue-900">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="text-red-600 hover:text-red-900">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
+               
             `).join('');
         }
 

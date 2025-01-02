@@ -1,6 +1,34 @@
 <?php 
 // require_once ("./User.classe.php");
     class Admin extends User {
+
+        public function utilisateurpaRole(PDO $pdo): array {
+            try {
+                $query = "SELECT u.id_user, u.nom,u.date_inscription,u.status, u.email, r.nom AS role 
+                          FROM utilisateurs u
+                          JOIN roles r ON u.role_id = r.id
+                          ORDER BY r.nom, u.nom";
+    
+                $stmt = $pdo->query($query);
+                $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+                // Organiser les utilisateurs par rôles
+                $utilsRole = [];
+                foreach ($users as $user) {
+                    $role = $user['role'];
+                    if (!isset($utilsRole[$role])) {
+                        $utilsRole[$role] = [];
+                    }
+                    $utilsRole[$role][] = $user;
+                }
+    
+                return $utilsRole;
+            } catch (PDOException $e) {
+                error_log("Erreur lors de la récupération des utilisateurs : " . $e->getMessage());
+                return [];
+            }
+        }
+
         public function creerCategorie(PDO $pdo, string $nom, string $description): bool {
             try {
                 $query = "INSERT INTO categories (nom, id_admin, description_cat) VALUES (:nom, :id_admin, :description_cat)";
