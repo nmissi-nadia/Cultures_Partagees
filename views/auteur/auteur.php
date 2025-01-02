@@ -14,7 +14,7 @@ $message = '';
 
 try {
     // Instancier l'auteur avec les données de la session
-    $auteur = new Auteur($_SESSION['id_user'],$_SESSION['nom'], $_SESSION['email'], '', $_SESSION['role_id']);
+    $auteur = new Auteur($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['role_id']);
     // $auteur->id_user = $_SESSION['id_user']; 
     $categories = $pdo->query("SELECT id, nom FROM categories")->fetchAll(PDO::FETCH_ASSOC);
     // Vérification si le formulaire est soumis
@@ -122,7 +122,7 @@ try {
             <!-- Boutons d'action -->
             <div class="flex justify-end space-x-4">
                 <button type="button" 
-                        onclick="window.location.href='mes-articles.php'"
+                        onclick="window.location.href='./dashboard.php'"
                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
                     Annuler
                 </button>

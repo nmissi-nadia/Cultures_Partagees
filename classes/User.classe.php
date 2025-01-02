@@ -38,6 +38,39 @@ class User {
             return false;
         }
     }
+    public function Infos_User(PDO $pdo, int $id): ?array {
+        try {
+            $query = "SELECT * FROM utilisateurs WHERE id_user = :id";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération de l'utilisateur : " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function modifierutili(PDO $pdo, int $id, array $data): bool {
+        try {
+            $query = "UPDATE utilisateurs 
+                      SET nom = :nom, email = :email, bio = :bio, photo_profil = :photo_profil 
+                      WHERE id_user = :id";
+
+            $stmt = $pdo->prepare($query);
+            return $stmt->execute([
+                ':id' => $id,
+                ':nom' => $data['nom'],
+                ':email' => $data['email'],
+                ':bio' => $data['bio'],
+                ':photo_profil' => $data['photo_profil'] ?? null,
+            ]);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la mise à jour de l'utilisateur : " . $e->getMessage());
+            return false;
+        }
+    }
 
     public function getId(): string {
         return $this->id_user   ;

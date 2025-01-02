@@ -1,6 +1,9 @@
 <?php
-require_once '../classes/Utilisateur.php';
+
 require_once '../config/db_connect.php'; 
+require_once '../classes/User.classe.php';
+require_once '../classes/Utilisateur.php';
+require_once '../classes/Auteur.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscri'])) {
     

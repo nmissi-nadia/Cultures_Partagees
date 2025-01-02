@@ -28,7 +28,7 @@
             Plongez dans un nouvel univers artistique en retournant à notre galerie
         </p>
 
-        <a href="/" class="group relative inline-flex items-center justify-center px-8 py-4 
+        <a href="./login.php" class="group relative inline-flex items-center justify-center px-8 py-4 
                           text-lg font-bold text-white transition-all duration-300 
                           bg-gradient-to-r from-purple-500 to-pink-500 rounded-full 
                           hover:from-purple-600 hover:to-pink-600 overflow-hidden">
