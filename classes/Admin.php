@@ -92,6 +92,41 @@
                 return false;
             }
         }
+        public function getArticles(PDO $pdo, int $offset, int $limit): array {
+            try {
+                $query = "SELECT * FROM articles LIMIT :offset, :limit";
+                $stmt = $pdo->prepare($query);
+                $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+                $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+                $stmt->execute();
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                error_log("Erreur lors de la consultation des articles : " . $e->getMessage());
+                return [];
+            }
+        }
+        public function getTotalArticles(PDO $pdo): int {
+            try {
+                $query = "SELECT COUNT(*) FROM articles";
+                $stmt = $pdo->prepare($query);
+                $stmt->execute();
+                return (int) $stmt->fetchColumn();
+            } catch (PDOException $e) {
+                error_log("Erreur lors de la consultation du nombre total d'articles : " . $e->getMessage());
+                return 0;
+            }
+        }
+        public function getCategories(PDO $pdo): array {
+            try {
+                $query = "SELECT * FROM categories";
+                $stmt = $pdo->prepare($query);
+                $stmt->execute();
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                error_log("Erreur lors de la consultation des catégories : " . $e->getMessage());
+                return [];
+            }
+        }
     }
     
 ?>

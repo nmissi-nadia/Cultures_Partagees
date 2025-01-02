@@ -14,6 +14,18 @@ try {
     $admin = new Admin($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['id_user']);
 
     $utilsRole = $admin->utilisateurpaRole($pdo);
+    // $articles = $admin->getArticles($pdo);      
+
+    // Pagination
+   // Pagination
+   $totalArticles = $admin->getTotalArticles($pdo);
+   $articlesPerPage = 6;
+   $totalPages = ceil($totalArticles / $articlesPerPage);
+   $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+   $offset = ($currentPage - 1) * $articlesPerPage;
+   $articles = $admin->getArticles($pdo, $offset, $articlesPerPage);
+    
+    $categories = $admin->getCategories($pdo);
 } catch (Exception $e) {
     die("Erreur : " . $e->getMessage());
 }
@@ -195,13 +207,15 @@ try {
                     <button class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-50">Suivant</button>
                 </div>
             </div>
+            
+            
             <div id="article" class="bg-white rounded-lg shadow">
                 <div class="p-4 lg:p-6 border-b border-gray-200">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <h3 class="text-lg font-medium">Liste des Utilisateurs</h3>
+                        <h3 class="text-lg font-medium">Liste des Articles</h3>
                         <div class="flex flex-wrap gap-2 w-full sm:w-auto">
                             <input type="text" placeholder="Rechercher..." 
-                                   class="px-4 py-2 border rounded-lg flex-grow sm:flex-grow-0">
+                                class="px-4 py-2 border rounded-lg flex-grow sm:flex-grow-0">
                             <button class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 whitespace-nowrap">
                                 <i class="fas fa-plus-circle mr-2"></i>
                                 Ajouter
@@ -209,79 +223,146 @@ try {
                         </div>
                     </div>
                 </div>
-                <?php if (!empty($utilsRole)): ?>
-                    <?php foreach ($utilsRole as $role => $users): ?>
+                <?php if (!empty($articles)): ?>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                        <?php foreach ($articles as $article): ?>
+                            <div class="bg-white rounded-lg shadow p-4">
+                                <img src="<?= htmlspecialchars($article['image_couverture']) ?>" alt="<?= htmlspecialchars($article['titre']) ?>" class="w-full h-48 object-cover rounded-lg mb-4">
+                                <h3 class="text-lg font-medium mb-2"><?= htmlspecialchars($article['titre']) ?></h3>
+                                <p class="text-sm text-gray-600 mb-4"><?= htmlspecialchars(substr($article['contenu'], 0, 100)) ?>...</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600"><?= htmlspecialchars($article['date_creation']) ?></span>
+                                    <div class="flex space-x-2">
+                                        <button class="px-2 py-1 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700" onclick="changeStatus(<?= $article['id'] ?>, 'publie')">Publier</button>
+                                        <button class="px-2 py-1 bg-yellow-600 text-white rounded-lg text-xs hover:bg-yellow-700" onclick="changeStatus(<?= $article['id'] ?>, 'en_attente')">En attente</button>
+                                        <button class="px-2 py-1 bg-red-600 text-white rounded-lg text-xs hover:bg-red-700" onclick="changeStatus(<?= $article['id'] ?>, 'rejete')">Rejeter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="flex justify-between items-center p-4 lg:p-6 border-t border-gray-200">
+                        <button class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-50" onclick="changePage('prev')">Précédent</button>
+                        <span class="text-sm text-gray-600">Page <?= $currentPage ?> sur <?= $totalPages ?></span>
+                        <button class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-50" onclick="changePage('next')">Suivant</button>
+                    </div>
+                <?php else: ?>
+                    <p>Aucun article trouvé.</p>
+                <?php endif; ?>
+            </div>
+
+            <script>
+            function changeStatus(articleId, status) {
+                // AJAX request to change the status of the article
+                fetch('path_to_your_change_status_script.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: articleId, status: status }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erreur lors du changement de statut');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+                function changePage(direction) {
+                    let currentPage = <?= $currentPage ?>;
+                    let totalPages = <?= $totalPages ?>;
+                    if (direction === 'prev' && currentPage > 1) {
+                        currentPage--;
+                    } else if (direction === 'next' && currentPage < totalPages) {
+                        currentPage++;
+                    }
+                    window.location.href = `?page=${currentPage}`;
+                }
+                </script>
+
+
+            <div id="categorie" class="bg-white rounded-lg shadow">
+                <div class="p-4 lg:p-6 border-b border-gray-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h3 class="text-lg font-medium">Gestion des Catégories</h3>
+                        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                            <input type="text" placeholder="Rechercher..." 
+                                class="px-4 py-2 border rounded-lg flex-grow sm:flex-grow-0">
+                            <button class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 whitespace-nowrap" onclick="openModal()">
+                                <i class="fas fa-plus-circle mr-2"></i>
+                                Ajouter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                    <?php if (!empty($categories)): ?>
                         <div class="overflow-x-auto">
-                        <h3 class="ml-10 text-xl font-semibold text-gray-800 mb-4"><?= htmlspecialchars($role) ?></h3>
                             <table class="w-full">
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                                         <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Date</th>
-                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Statut</th>
                                         <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200" id="table-body">
-                                <?php foreach ($users as $user): ?>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                <?php foreach ($categories as $categorie): ?>
                                     <tr class="hover:bg-gray-50">
-                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($user['id_user']) ?></td>
-                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($user['nom']) ?></td>
-                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($user['email']) ?></td>
-                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell"><?= htmlspecialchars($user['date_inscription']) ?></td>
-                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                <?= $user['status'] === 'actif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
-                                                <?= htmlspecialchars($user['status']) ?>
-                                            </span>
-                                        </td>
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($categorie['id']) ?></td>
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($categorie['nom']) ?></td>
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm space-x-3">
-                                            <button name="modififerutilisateur" class="text-blue-600 hover:text-blue-900">
+                                            <button name="modifiercategorie" class="text-blue-600 hover:text-blue-900">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button name="supprimeutilis" class="text-red-600 hover:text-red-900">
+                                            <button name="supprimercategorie" class="text-red-600 hover:text-red-900">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </td>
                                     </tr>
-                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
-                    <?php endforeach; ?>
                     <?php else: ?>
-                        <p>Aucun utilisateur trouvé.</p>
+                        <p>Aucune catégorie trouvée.</p>
                     <?php endif; ?>
-                <!-- Mobile Pagination -->
-                <div class="flex justify-between items-center p-4 lg:p-6 border-t border-gray-200">
-                    <button class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-50">Précédent</button>
-                    <span class="text-sm text-gray-600">Page 1 sur 5</span>
-                    <button class="px-4 py-2 border rounded text-sm text-gray-600 hover:bg-gray-50">Suivant</button>
-                </div>
-            </div>
-            <div id="categorie" class="bg-white rounded-lg shadow">
-                <div class="p-4 lg:p-6 border-b border-gray-200">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <h3 class="text-lg font-medium">Gestion des Catégorie</h3>
-                        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-                            <input type="text" placeholder="Rechercher..." 
-                                   class="px-4 py-2 border rounded-lg flex-grow sm:flex-grow-0">
-                            <button class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 whitespace-nowrap">
-                                <i class="fas fa-plus-circle mr-2"></i>
-                                Ajouter
-                            </button>
-                        </div>
-                        
-                    </div>
-                </div>
-                   
-                
             </div>
         </div>
     </main>
+            <!-- Modal for adding a new category -->
+            <div id="modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+                <div class="flex items-center justify-center min-h-screen">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-lg font-medium mb-4">Ajouter une nouvelle catégorie</h2>
+                        <form action="path_to_your_add_category_script.php" method="POST">
+                            <div class="mb-4">
+                                <label for="nom" class="block text-sm font-medium text-gray-700">Nom</label>
+                                <input type="text" name="nom" id="nom" class="mt-1 px-4 py-2 border rounded-lg w-full">
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="button" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 mr-2" onclick="closeModal()">Annuler</button>
+                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Ajouter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
+            <script>
+                    function openModal() {
+                        document.getElementById('modal').classList.remove('hidden');
+                    }
+                    function closeModal() {
+                        document.getElementById('modal').classList.add('hidden');
+                    }
+            </script>
     <script>
     
 
