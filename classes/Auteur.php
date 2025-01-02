@@ -47,6 +47,26 @@ class Auteur extends Utilisateur {
             ];
         }
     }
+     
+
+    public function creerArticle(PDO $pdo, string $titre, string $contenu, string $imagePath, int $categorieId): bool {
+        try {
+            $query = "INSERT INTO articles (titre, contenu, image_couverture, auteur_id, categorie_id, status, date_creation) 
+                      VALUES (:titre, :contenu, :image_couverture, :auteur_id, :categorie_id, 'en_attente', NOW())";
+
+            $stmt = $pdo->prepare($query);
+            return $stmt->execute([
+                ':titre' => $titre,
+                ':contenu' => $contenu,
+                ':image_couverture' => $imagePath,
+                ':auteur_id' => $this->id_user,
+                ':categorie_id' => $categorieId,
+            ]);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la création de l'article : " . $e->getMessage());
+            return false;
+        }
+    }
 
     public function filtrerArticles(PDO $pdo, int $categorieId): array {
         try {

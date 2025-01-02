@@ -1,3 +1,58 @@
+<?php
+   require_once ("../../config/db_connect.php");
+   require_once ("../../classes/User.classe.php");
+   require_once ("../../classes/Utilisateur.php");
+   require_once ("../../classes/Auteur.php");
+session_start();
+
+if (!isset($_SESSION['id_user']) && !isset($_SESSION['role_id'])!==2) { 
+    header('Location: ../login.php'); 
+    exit();
+}
+
+$message = '';
+
+try {
+    // Instancier l'auteur avec les données de la session
+    $auteur = new Auteur($_SESSION['id_user'],$_SESSION['nom'], $_SESSION['email'], '', $_SESSION['role_id']);
+    // $auteur->id_user = $_SESSION['id_user']; 
+    $categories = $pdo->query("SELECT id, nom FROM categories")->fetchAll(PDO::FETCH_ASSOC);
+    // Vérification si le formulaire est soumis
+    echo "<script>alert('hellowords1');</script>";
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        echo "<script>alert('hellowords2');</script>";
+        $titre = htmlspecialchars(trim($_POST['titre'] ?? ''));
+        $contenu = htmlspecialchars(trim($_POST['contenu'] ?? ''));
+        $categorie_id = intval($_POST['categorie_id'] ?? 0);
+        if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+            echo "<script>alert('hellowords3');</script>";
+            $uploadDir = '../uploads/';
+            $fileName = basename($_FILES['cover_image']['name']);
+            $filePath = $uploadDir . uniqid() . '_' . $fileName;
+
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            if (move_uploaded_file($_FILES['cover_image']['tmp_name'], $filePath)) {
+            
+                if ($auteur->creerArticle($pdo, $titre, $contenu, $filePath, $categorie_id)) {
+                    $message = 'Article créé avec succès. En attente de validation.';
+                    header("Location:./dashboard.php");
+                } else {
+                    $message = 'Erreur lors de la création de l\'article.';
+                }
+            } else {
+                $message = 'Erreur lors du téléchargement de l\'image.';
+            }
+        } else {
+            $message = 'Veuillez sélectionner une image valide.';
+        }
+    }
+} catch (Exception $e) {
+    $message = 'Erreur : ' . $e->getMessage();
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,7 +66,7 @@
     <div class="max-w-4xl mx-auto p-6">
         <h1 class="text-3xl font-bold mb-8">Créer un nouvel article</h1>
 
-        <form id="articleForm" class="space-y-6" method="POST" action="create_article.php" enctype="multipart/form-data">
+        <form id="articleForm" class="space-y-6" method="POST" action="#" enctype="multipart/form-data">
             <!-- Champ pour le titre -->
             <div>
                 <label for="title" class="block text-sm font-medium text-gray-700">Titre de l'article</label>
@@ -29,12 +84,17 @@
             <div>
                 <label for="category" class="block text-sm font-medium text-gray-700">Catégorie</label>
                 <select id="category" 
-                        name="category_id" 
-                        required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <option value="">Sélectionnez une catégorie</option>
-                    <!-- Les catégories seront chargées dynamiquement via PHP -->
-                </select>
+                    name="categorie_id" 
+                    required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option value="">Sélectionnez une catégorie</option>
+                <?php foreach ($categories as $categorie): ?>
+                    <option value="<?= htmlspecialchars($categorie['id']) ?>">
+                        <?= htmlspecialchars($categorie['nom']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
             </div>
 
             <!-- Image de couverture -->
@@ -53,9 +113,9 @@
             <div>
                 <label for="content" class="block text-sm font-medium text-gray-700">Contenu de l'article</label>
                 <textarea id="content" 
-                          name="content" 
-                          required
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                          name="contenu" 
+                          
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 "
                           rows="15"></textarea>
             </div>
 
@@ -66,7 +126,7 @@
                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
                     Annuler
                 </button>
-                <button type="submit" 
+                <button type="submit" name="publi"
                         class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700">
                     Publier l'article
                 </button>

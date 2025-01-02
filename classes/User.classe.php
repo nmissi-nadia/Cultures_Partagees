@@ -6,13 +6,12 @@ class User {
     protected string $motDePasse;
     protected int $role_id;
 
-    public function __construct(string $nom, string $email, string $motDePasse, int $role_id) {
+    public function __construct( string $nom, string $email, string $motDePasse, int $role_id) {
         $this->nom = $nom;
         $this->email = $email;
         $this->motDePasse = password_hash($motDePasse, PASSWORD_DEFAULT);
         $this->role_id = $role_id;
     }
-
 
 
     public function seConnecter(PDO $pdo, string $email, string $password): bool {
@@ -27,6 +26,10 @@ class User {
                 $this->nom = $user['nom'];
                 $this->email = $user['email'];
                 $this->role_id = $user['role_id'];
+                $_SESSION['id_user'] = $this->id_user;
+                $_SESSION['nom'] = $this->nom;
+                $_SESSION['email'] = $this->email;
+                $_SESSION['role_id'] = $this->role_id;
                 return true;
             }
             return false;

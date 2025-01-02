@@ -100,7 +100,7 @@ try {
                             <a href="/mes-articles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes articles</a>
                             <a href="/parametres" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Paramètres</a>
                             <hr class="my-2">
-                            <a href="/deconnexion" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Déconnexion</a>
+                            <a href="../lougout.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Déconnexion</a>
                         </div>
                     </div>
                     <a href="./auteur.php" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">

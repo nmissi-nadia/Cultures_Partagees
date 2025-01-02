@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['connct'])) {
     // Récupération des données du formulaire
     $email = htmlspecialchars(trim($_POST['email'] ?? ''));
     $motDePasse = $_POST['mot_de_passe'] ?? '';
-
+    session_start();
     // Validation des champs
     if (empty($email) || empty($motDePasse)) {
         die('Tous les champs sont requis.');
@@ -19,20 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['connct'])) {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         die('L\'adresse email n\'est pas valide.');
     }
-
-    // Création d'une instance de User pour se connecter
-    $user = new User('', $email, $motDePasse, 0); // Le rôle et le nom ne sont pas nécessaires ici
+    $user = new User('', $email, $motDePasse, 0);
 
     try {
         if ($user->seConnecter($pdo, $email, $motDePasse)) {
-            // Stockage des informations utilisateur dans la session
-            session_start();
-            $_SESSION['id_user'] = $user->getId();
-            $_SESSION['nom'] = $user->getNom();
-            $_SESSION['email'] = $user->getEmail();
-            $_SESSION['role_id'] = $user->getRole();
+        
             echo "<script>console.log('" . $_SESSION['id_user'] . "');</script>";
-
             echo 'Connexion réussie. Redirection en cours...';
             if($_SESSION['role_id']==1){
                 header('Refresh: 2; URL=./admin/dashboard.php');

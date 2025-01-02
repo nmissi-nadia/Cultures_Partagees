@@ -29,7 +29,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-50">
-    
      <header class="bg-white shadow-md">
         <div class="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-1 text-sm">
             <div class="max-w-7xl mx-auto flex justify-between items-center">
