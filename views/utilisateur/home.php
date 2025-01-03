@@ -75,11 +75,11 @@
                             <a href="/mes-articles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes articles</a>
                             <a href="/parametres" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Paramètres</a>
                             <hr class="my-2">
-                            <a href="/deconnexion" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Déconnexion</a>
+                            <a href="../lougout.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Déconnexion</a>
                         </div>
                     </div>
-                    <a href="/creer-article" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-                        Publier
+                    <a href="../lougout.php" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                        Deconnexion
                     </a>
                 </div>
 
@@ -106,7 +106,7 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Search and Filter Section -->
+        
         <div class="mb-8">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
@@ -131,7 +131,6 @@
             </div>
         </div>
 
-        <!-- Grille des articles -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="articles-grid">
             <?php if (!empty($articles)): ?>
                 <?php foreach ($articles as $article): ?>
@@ -154,11 +153,12 @@
                             </p>
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-500">Par <?= htmlspecialchars($article['author']) ?></span>
-                                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">
+                                <a href="./detailsarticle.php?id=<?= $article['id'] ?>" class="text-blue-600 hover:text-blue-800 font-medium">
                                     Lire plus <i class="fas fa-arrow-right ml-1"></i>
                                 </a>
                             </div>
                         </div>
+                       
                     </article>
                 <?php endforeach; ?>
             <?php else: ?>

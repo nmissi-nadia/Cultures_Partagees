@@ -15,20 +15,21 @@ $message = '';
 try {
     // Instancier l'auteur avec les données de la session
     $auteur = new Auteur($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['role_id']);
+    $auteur->setId($_SESSION['id_user']);
     // $auteur->id_user = $_SESSION['id_user']; 
     $categories = $pdo->query("SELECT id, nom FROM categories")->fetchAll(PDO::FETCH_ASSOC);
-    // Vérification si le formulaire est soumis
-    echo "<script>alert('hellowords1');</script>";
+    
+    // echo "<script>alert('hellowords1');</script>";
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>alert('hellowords2');</script>";
-        $titre = htmlspecialchars(trim($_POST['titre'] ?? ''));
+        $titre = htmlspecialchars(trim($_POST['title'] ?? ''));
         $contenu = htmlspecialchars(trim($_POST['contenu'] ?? ''));
         $categorie_id = intval($_POST['categorie_id'] ?? 0);
         if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             echo "<script>alert('hellowords3');</script>";
             $uploadDir = '../uploads/';
             $fileName = basename($_FILES['cover_image']['name']);
-            $filePath = $uploadDir . uniqid() . '_' . $fileName;
+            $filePath = $uploadDir . $fileName;
 
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);

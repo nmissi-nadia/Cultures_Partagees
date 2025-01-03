@@ -132,6 +132,8 @@ try {
 
     <!-- Contenu principal -->
     <main class="container max-w-7xl mx-auto my-8 px-4 py-8">
+    <span class="mr-4">Bienvenue, <?= htmlspecialchars($_SESSION['nom']) ?></span>
+
         <div class="mb-8">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
@@ -155,7 +157,6 @@ try {
                 </div>
             </div>
         </div>
-        <span class="mr-4">Bienvenue, <?= htmlspecialchars($_SESSION['nom']) ?></span>
             <h2 class="text-2xl font-bold">Vos Articles</h2>
             
 
@@ -174,7 +175,7 @@ try {
                                 </span>
                                 <span class="ml-2"><?= htmlspecialchars($article['date']) ?></span>
                             </div>
-                            <h2 class="text-xl font-semibold text-gray-800 mb-2">
+                            <h2 class="text-xxl font-bold text-gray-800 mb-2">
                                 <?= htmlspecialchars($article['title']) ?>
                             </h2>
                             <p class="text-gray-600 mb-4">
@@ -189,7 +190,7 @@ try {
         </div>
 
         <!-- Pagination -->
-        <div class="flex justify-center mt-6">
+        <div class="flex justify-center mt-10 mb-4">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                 <a href="?page=<?= $i ?>" 
                    class="px-4 py-2 mx-1 rounded border <?= $i === $page ? 'bg-blue-600 text-white' : 'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white' ?>">
