@@ -35,7 +35,7 @@
                 $stmt = $pdo->prepare($query);
                 return $stmt->execute([
                     'nom' => $nom,
-                    'id_admin' => $this->id_user,
+                    'id_admin' => $this->getId(),
                     'description_cat' => $description,
                 ]);
             } catch (PDOException $e) {

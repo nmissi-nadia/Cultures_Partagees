@@ -11,8 +11,8 @@ if (!isset($_SESSION['id_user']) || $_SESSION['role_id'] !== 1) {
 }
 try {
     // Instanciation de l'administrateur
-    $admin = new Admin($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['id_user']);
-
+    $admin = new Admin($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['role_id']);
+    $admin->setId($_SESSION['id_user']);
     $utilsRole = $admin->utilisateurpaRole($pdo);
     // $articles = $admin->getArticles($pdo);      
 
@@ -28,6 +28,21 @@ try {
     $categories = $admin->getCategories($pdo);
 } catch (Exception $e) {
     die("Erreur : " . $e->getMessage());
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['ajoutcat'])) {
+            $nom = $_POST['nom'];
+            $description_cat = $_POST['description_cat'];
+            // $admin = new Admin($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['id_user']);
+
+            if ($admin->creerCategorie($pdo, $nom, $description_cat)) {
+                header('Location: ./dashboard.php');
+                exit();
+            } else {
+                header('Location: ./dashboard.php?error=1');
+                exit();
+            }
+    }   
 }
 ?>
 <!DOCTYPE html>
@@ -255,7 +270,7 @@ try {
             <script>
             function changeStatus(articleId, status) {
                 // AJAX request to change the status of the article
-                fetch('path_to_your_change_status_script.php', {
+                fetch('.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -341,14 +356,18 @@ try {
                 <div class="flex items-center justify-center min-h-screen">
                     <div class="bg-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-lg font-medium mb-4">Ajouter une nouvelle catégorie</h2>
-                        <form action="path_to_your_add_category_script.php" method="POST">
+                        <form action="#" method="POST">
                             <div class="mb-4">
                                 <label for="nom" class="block text-sm font-medium text-gray-700">Nom</label>
-                                <input type="text" name="nom" id="nom" class="mt-1 px-4 py-2 border rounded-lg w-full">
+                                <input type="text" name="nom" id="nom" class="mt-1 px-4 py-2 border rounded-lg w-full" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="description_cat" class="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea name="description_cat" id="description_cat" class="mt-1 px-4 py-2 border rounded-lg w-full" rows="4"></textarea>
                             </div>
                             <div class="flex justify-end">
                                 <button type="button" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 mr-2" onclick="closeModal()">Annuler</button>
-                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Ajouter</button>
+                                <button type="submit" name="ajoutcat"  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Ajouter</button>
                             </div>
                         </form>
                     </div>
