@@ -134,7 +134,7 @@ try {
     <main class="container max-w-7xl mx-auto my-8 px-4 py-8">
     <span class="mr-4">Bienvenue, <?= htmlspecialchars($_SESSION['nom']) ?></span>
 
-        <div class="mb-8">
+        <div class="mb-8  mt-8">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
                     <input type="text" 
@@ -161,7 +161,7 @@ try {
             
 
         <!-- Grille des articles -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             <?php if (!empty($articles)): ?>
                 <?php foreach ($articles as $article): ?>
                     <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
