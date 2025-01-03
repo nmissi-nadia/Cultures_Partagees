@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Desktop Sidebar -->
-    <aside id="desktop-sidebar" class="hidden lg:block fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transition-all duration-300 z-30">
+    <aside id="desktop-sidebar particules" class="hidden lg:block fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transition-all duration-300 z-30">
         <div class="flex justify-between items-center p-4 border-b border-gray-800">
             <h1 class="font-bold">Dashboard Admin</h1>
             <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-800 rounded-lg">
@@ -240,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             
-            <div id="article" class="bg-white rounded-lg shadow">
+            <div id="article" class="bg-white rounded-lg shadow mt-10">
                 <div class="p-4 lg:p-6 border-b border-gray-200">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <h3 class="text-lg font-medium">Liste des Articles</h3>
@@ -323,7 +323,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </script>
 
 
-            <div id="categorie" class="bg-white rounded-lg shadow">
+            <div id="categorie" class="bg-white rounded-lg shadow mt-10">
                 <div class="p-4 lg:p-6 border-b border-gray-200">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <h3 class="text-lg font-medium">Gestion des Catégories</h3>
@@ -506,5 +506,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             populateTable();
         });
     </script>
+    
 </body>
 </html>

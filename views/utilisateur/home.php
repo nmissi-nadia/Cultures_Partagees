@@ -9,7 +9,10 @@
         exit();
     }
     $utilisateur = new Utilisateur($_SESSION['nom'], $_SESSION['email'], '', $_SESSION['role_id']);
-
+    $query = "SELECT id, nom FROM categories";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute();
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // Récupérer les articles
     $page = intval($_GET['page'] ?? 1);
     $limit = 6;
@@ -92,13 +95,13 @@
             <!-- Menu mobile -->
             <div class="md:hidden hidden" id="mobileMenu">
                 <div class="px-2 pt-2 pb-3 space-y-1">
-                    <a href="/categories" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Catégories</a>
-                    <a href="/articles" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Articles</a>
-                    <a href="/auteurs" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Auteurs</a>
-                    <a href="/a-propos" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">À propos</a>
+                    <a href="./categories" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Catégories</a>
+                    <a href="./articles" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Articles</a>
+                    <a href="./auteurs" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Auteurs</a>
+                    <a href="./a-propos" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">À propos</a>
                     <hr class="my-2">
-                    <a href="/profil" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Mon compte</a>
-                    <a href="/creer-article" class="block px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Publier</a>
+                    <a href="./profil" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Mon compte</a>
+                    
                 </div>
             </div>
         </nav>
@@ -107,65 +110,83 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-8">
         
-        <div class="mb-8">
-            <div class="flex flex-col md:flex-row gap-4">
+    <div id="filtrage" class="mb-8">
+            <form action="home.php" method="GET" class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
-                    <input type="text" 
-                           placeholder="Rechercher un article..." 
-                           class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="text" name="search" placeholder="Rechercher un article..." class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
                 <div class="flex gap-4 flex-wrap">
-                    <select class="px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <select name="category" class="px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         <option value="">Toutes les catégories</option>
-                        <option value="peinture">Peinture</option>
-                        <option value="musique">Musique</option>
-                        <option value="litterature">Littérature</option>
-                        <option value="cinema">Cinéma</option>
+                        <?php 
+                            foreach ($categories as $categorie) {
+                                echo '<option value="' . $categorie['id'] . '">' . htmlspecialchars($categorie['nom']) . '</option>';
+                            }
+                        ?>
                     </select>
-                    <select class="px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="recent">Plus récents</option>
-                        <option value="popular">Plus populaires</option>
-                        <option value="viewed">Plus vus</option>
+                    <select name="date" class="px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="">Toutes les dates</option>
+                        <option value="2023-01-01">2023</option>
+                        <option value="2022-01-01">2022</option>
+                        <option value="2021-01-01">2021</option>
                     </select>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Filtrer</button>
                 </div>
-            </div>
+            </form>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="articles-grid">
-            <?php if (!empty($articles)): ?>
-                <?php foreach ($articles as $article): ?>
-                    <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                        <img src="<?= htmlspecialchars($article['image'] ?? '/api/placeholder/800/400') ?>" 
-                             alt="<?= htmlspecialchars($article['title']) ?>" 
-                             class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <div class="flex items-center text-sm text-gray-500 mb-2">
-                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-                                    <?= htmlspecialchars($article['category']) ?>
-                                </span>
-                                <span class="ml-2"><?= htmlspecialchars($article['date']) ?></span>
-                            </div>
-                            <h2 class="text-xl font-semibold text-gray-800 mb-2">
-                                <?= htmlspecialchars($article['title']) ?>
-                            </h2>
-                            <p class="text-gray-600 mb-4">
-                                <?= htmlspecialchars(substr($article['excerpt'], 0, 100)) ?>...
-                            </p>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-500">Par <?= htmlspecialchars($article['author']) ?></span>
-                                <a href="./detailsarticle.php?id=<?= $article['id'] ?>" class="text-blue-600 hover:text-blue-800 font-medium">
-                                    Lire plus <i class="fas fa-arrow-right ml-1"></i>
-                                </a>
-                            </div>
-                        </div>
-                       
-                    </article>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>Aucun article trouvé.</p>
-            <?php endif; ?>
-        </div>
+        <?php
+           
+            $search = $_GET['search'] ?? '';
+            $category = $_GET['category'] ?? '';
+            $date = $_GET['date'] ?? '';
 
+            $query = "SELECT a.id, a.titre, a.contenu, a.date_creation, a.image_couverture, c.nom AS categorie
+                      FROM articles a
+                      JOIN categories c ON a.categorie_id = c.id
+                      WHERE a.status = 'publie'";
+
+            if ($search) {
+                $query .= " AND (a.titre LIKE :search OR a.contenu LIKE :search)";
+            }
+            if ($category) {
+                $query .= " AND a.categorie_id = :category";
+            }
+            if ($date) {
+                $query .= " AND DATE(a.date_creation) = :date";
+            }
+
+            $stmt = $pdo->prepare($query);
+
+            if ($search) {
+                $searchParam = '%' . $search . '%';
+                $stmt->bindParam(':search', $searchParam, PDO::PARAM_STR);
+            }
+            if ($category) {
+                $stmt->bindParam(':category', $category, PDO::PARAM_INT);
+            }
+            if ($date) {
+                $stmt->bindParam(':date', $date, PDO::PARAM_STR);
+            }
+
+            $stmt->execute();
+            $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Afficher les articles filtrés
+            foreach ($articles as $article) {
+                echo '<div class="bg-white rounded-lg shadow-lg p-6">';
+                echo '<img src="' . htmlspecialchars($article['image_couverture']) . '" alt="' . htmlspecialchars($article['titre']) . '" class="w-full h-48 object-cover rounded-lg mb-4">';
+                echo '<h2 class="text-xl font-semibold mb-2">' . htmlspecialchars($article['titre']) . '</h2>';
+                echo '<p class="text-gray-700 mb-4">' . htmlspecialchars(substr($article['contenu'], 0, 100)) . '...</p>';
+                echo '<p class="text-sm text-gray-600">Catégorie: ' . htmlspecialchars($article['categorie']) . '</p>';
+                echo '<p class="text-sm text-gray-600">Date: ' . htmlspecialchars($article['date_creation']) . '</p>';
+                echo '</div>';
+            }
+        ?>
+          
+        </div>
+        
         <!-- Pagination -->
         <div id="pagination" class="flex justify-center mt-6">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
