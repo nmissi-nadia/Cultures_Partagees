@@ -88,7 +88,7 @@ L'objectif principal est de créer une communauté dynamique et enrichissante au
 ## 📸 **Aperçus**
 
 ### **1. Page d'Accueil**
-![Page d'Accueil](uploads/screenshots/homepage.png)
+![Page d'Accueil](Doc/image.png)
 
 ### **2. Tableau de Bord Auteur**
 ![Tableau de Bord Auteur](uploads/screenshots/dashboard_author.png)
