@@ -26,6 +26,8 @@ try {
    $articles = $admin->getArticles($pdo, $offset, $articlesPerPage);
     
     $categories = $admin->getCategories($pdo);
+    $totalUsers = $admin->TotalUsers($pdo);
+    $totalCategories = $admin->TotalCategories($pdo);
 } catch (Exception $e) {
     die("Erreur : " . $e->getMessage());
 }
@@ -123,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-gray-500">Total Utilisateurs</p>
-                            <h3 class="text-xl lg:text-2xl font-bold mt-2">125</h3>
+                            <h3 class="text-xl lg:text-2xl font-bold mt-2"><?= $totalUsers ?></h3>
                         </div>
                         <i class="fas fa-users text-blue-500 text-xl lg:text-2xl"></i>
                     </div>
@@ -135,11 +137,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-gray-500">Total Articles</p>
-                            <h3 class="text-xl lg:text-2xl font-bold mt-2">348</h3>
+                            <h3 class="text-xl lg:text-2xl font-bold mt-2"><?= $totalArticles ?></h3>
                         </div>
                         <i class="fas fa-file-alt text-blue-500 text-xl lg:text-2xl"></i>
                     </div>
-                    <p class="text-sm text-orange-500 mt-4">12 en attente</p>
+                    <?php
+                $articlesEnAttente = $admin->ArticlesEnAttente($pdo);
+                ?>
+                    <p class="text-sm text-orange-500 mt-4"><?= $articlesEnAttente ?></p>
+               
+                
                 </div>
 
                 <!-- Categories Card -->
@@ -147,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-gray-500">Catégories</p>
-                            <h3 class="text-xl lg:text-2xl font-bold mt-2">8</h3>
+                            <h3 class="text-xl lg:text-2xl font-bold mt-2"><?= $totalCategories ?></h3>
                         </div>
                         <i class="fas fa-folder-open text-blue-500 text-xl lg:text-2xl"></i>
                     </div>
@@ -241,6 +248,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if (!empty($articles)): ?>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                         <?php foreach ($articles as $article): ?>
+                            
+                            <a href="./detailsarticle.php?id=<?= $article['id'] ?>" class="bg-white rounded-lg shadow p-4 block">
                             <div class="bg-white rounded-lg shadow p-4">
                                 <img src="<?= htmlspecialchars($article['image_couverture']) ?>" alt="<?= htmlspecialchars($article['titre']) ?>" class="w-full h-48 object-cover rounded-lg mb-4">
                                 <h3 class="text-lg font-medium mb-2"><?= htmlspecialchars($article['titre']) ?></h3>
@@ -254,6 +263,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                 </div>
                             </div>
+                            </a>    
+                            
                         <?php endforeach; ?>
                     </div>
                     <!-- Pagination -->
@@ -270,7 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <script>
             function changeStatus(articleId, status) {
                 // AJAX request to change the status of the article
-                fetch('.php', {
+                fetch('modifier_article_status.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

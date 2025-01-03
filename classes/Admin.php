@@ -116,6 +116,18 @@
                 return 0;
             }
         }
+            public function ArticlesEnAttente(PDO $pdo): int {
+                try {
+                    $query = "SELECT COUNT(*) FROM articles where status = 'en_attente'";
+                    $stmt = $pdo->prepare($query);
+                    $stmt->execute();
+                    return (int) $stmt->fetchColumn();
+                } catch (PDOException $e) {
+                    error_log("Erreur lors de la consultation du nombre total d'articles : " . $e->getMessage());
+                    return 0;
+                }
+            }
+
         public function getCategories(PDO $pdo): array {
             try {
                 $query = "SELECT * FROM categories";
@@ -125,6 +137,29 @@
             } catch (PDOException $e) {
                 error_log("Erreur lors de la consultation des catégories : " . $e->getMessage());
                 return [];
+            }
+        }
+        public function TotalUsers(PDO $pdo): int {
+            try {
+                $query = "SELECT COUNT(*) FROM utilisateurs";
+                $stmt = $pdo->prepare($query);
+                $stmt->execute();
+                return (int) $stmt->fetchColumn();
+            } catch (PDOException $e) {
+                error_log("Erreur lors de la consultation du nombre total d'utilisateurs : " . $e->getMessage());
+                return 0;
+            }
+        }
+        
+        public function TotalCategories(PDO $pdo): int {
+            try {
+                $query = "SELECT COUNT(*) FROM categories";
+                $stmt = $pdo->prepare($query);
+                $stmt->execute();
+                return (int) $stmt->fetchColumn();
+            } catch (PDOException $e) {
+                error_log("Erreur lors de la consultation du nombre total de catégories : " . $e->getMessage());
+                return 0;
             }
         }
     }
