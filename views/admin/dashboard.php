@@ -115,6 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fas fa-folder-open mr-3"></i>
                 <span class="sidebar-text">Catégories</span>
             </button>
+            <div>
+                    <a href="../lougout.php" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Déconnexion</a>
+            </div>
         </nav>
     </aside>
 
@@ -209,9 +212,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             </span>
                                         </td>
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm space-x-3">
-                                            <button name="modififerutilisateur" class="text-blue-600 hover:text-blue-900">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
+                                        <a href="profilutilisateur.php?id=<?= $user['id_user'] ?>" class="text-blue-600 hover:text-blue-900">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
                                             <form action="supprimerUse.php" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');" style="display:inline;">
                                                 <input type="hidden" name="user_id" value="<?= $user['id_user'] ?>">
                                                 <button type="submit" name="supprimeutilis" class="text-red-600 hover:text-red-900">
@@ -255,20 +258,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                         <?php foreach ($articles as $article): ?>
                             
-                            <a href="./detailsarticle.php?id=<?= $article['id'] ?>" class="bg-white rounded-lg shadow p-4 block">
-                            <div class="bg-white rounded-lg shadow p-4">
-                                <img src="<?= htmlspecialchars($article['image_couverture']) ?>" alt="<?= htmlspecialchars($article['titre']) ?>" class="w-full h-48 object-cover rounded-lg mb-4">
-                                <h3 class="text-lg font-medium mb-2"><?= htmlspecialchars($article['titre']) ?></h3>
-                                <p class="text-sm text-gray-600 mb-4"><?= htmlspecialchars(substr($article['contenu'], 0, 100)) ?>...</p>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600"><?= htmlspecialchars($article['date_creation']) ?></span>
-                                    <div class="flex space-x-2">
-                                        <button class="px-2 py-1 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700" onclick="changeStatus(<?= $article['id'] ?>, 'publie')">Publier</button>
-                                        <button class="px-2 py-1 bg-yellow-600 text-white rounded-lg text-xs hover:bg-yellow-700" onclick="changeStatus(<?= $article['id'] ?>, 'en_attente')">En attente</button>
-                                        <button class="px-2 py-1 bg-red-600 text-white rounded-lg text-xs hover:bg-red-700" onclick="changeStatus(<?= $article['id'] ?>, 'rejete')">Rejeter</button>
+                            <a href="./detailsarticle.php?id=<?= $article['id'] ?>" class="bg-transparent rounded-lg shadow p-4 block">
+                                    <!-- <div class="bg-white rounded-lg shadow p-4"> -->
+                                    <img src="<?= htmlspecialchars($article['image_couverture']) ?>" alt="<?= htmlspecialchars($article['titre']) ?>" class="w-full h-48 object-cover rounded-lg mb-4">
+                                    <h3 class="text-lg font-medium mb-2"><?= htmlspecialchars($article['titre']) ?></h3>
+                                    <p class="text-sm text-gray-600 mb-4"><?= htmlspecialchars(substr($article['contenu'], 0, 100)) ?>...</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600"><?= htmlspecialchars($article['date_creation']) ?></span>
+                                        <div class="flex space-x-2">
+                                            <button class="px-2 py-1 bg-green-600 text-white rounded-lg text-xs hover:bg-green-700" onclick="changeStatus(<?= $article['id'] ?>, 'publie')">Publier</button>
+                                            <button class="px-2 py-1 bg-yellow-600 text-white rounded-lg text-xs hover:bg-yellow-700" onclick="changeStatus(<?= $article['id'] ?>, 'en_attente')">En attente</button>
+                                            <button class="px-2 py-1 bg-red-600 text-white rounded-lg text-xs hover:bg-red-700" onclick="changeStatus(<?= $article['id'] ?>, 'rejete')">Rejeter</button>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
+                                <!-- </div> -->
                             </a>    
                             
                         <?php endforeach; ?>
@@ -341,6 +344,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <tr>
                                         <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                                         <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                        <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                                         <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
@@ -349,13 +353,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($categorie['id']) ?></td>
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($categorie['nom']) ?></td>
+                                        <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?= htmlspecialchars($categorie['description_cat']) ?></td>
                                         <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-sm space-x-3">
-                                            <button name="modifiercategorie" class="text-blue-600 hover:text-blue-900">
+                                            <button name="modifiercategorie" class="text-blue-600 hover:text-blue-900" onclick="openEditModal(<?= $categorie['id'] ?>, '<?= htmlspecialchars($categorie['nom']) ?>', '<?= htmlspecialchars($categorie['description_cat']) ?>')">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button name="supprimercategorie" class="text-red-600 hover:text-red-900">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                            <form action="supprimecategory.php" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');" style="display:inline;">
+                                                <input type="hidden" name="category_id" value="<?= $categorie['id'] ?>">
+                                                <button type="submit" name="supprimercategorie" class="text-red-600 hover:text-red-900">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -368,7 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </main>
-            <!-- Modal for adding a new category -->
+            <!-- Modal pour Ajout d'une nv cat -->
             <div id="modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
                 <div class="flex items-center justify-center min-h-screen">
                     <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -390,7 +398,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             </div>
-
+                <!-- Modal pour Modification des  categorie -->
+            <div id="editModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+                <div class="flex items-center justify-center min-h-screen">
+                    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                        <h2 class="text-lg font-medium mb-4">Modifier la catégorie</h2>
+                        <form id="editCategoryForm" action="modcategory.php" method="POST">
+                            <input type="hidden" name="category_id" id="editCategoryId">
+                            <div class="mb-4">
+                                <label for="editCategoryName" class="block text-sm font-medium text-gray-700">Nom</label>
+                                <input type="text" name="nom" id="editCategoryName" class="mt-1 px-4 py-2 border rounded-lg w-full" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="editCategoryDescription" class="block text-sm font-medium text-gray-700">Description</label>
+                                <textarea name="description_cat" id="editCategoryDescription" class="mt-1 px-4 py-2 border rounded-lg w-full" rows="4" required></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="button" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 mr-2" onclick="closeEditModal()">Annuler</button>
+                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Enregistrer</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+    </div>
             <script>
                     function openModal() {
                         document.getElementById('modal').classList.remove('hidden');
@@ -398,8 +428,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     function closeModal() {
                         document.getElementById('modal').classList.add('hidden');
                     }
-            </script>
-    <script>
+           
+                function openEditModal(id, name, description) {
+                    document.getElementById('editCategoryId').value = id;
+                    document.getElementById('editCategoryName').value = name;
+                    document.getElementById('editCategoryDescription').value = description;
+                    document.getElementById('editModal').classList.remove('hidden');
+                }
+
+                function closeEditModal() {
+                    document.getElementById('editModal').classList.add('hidden');
+                }
+                
+    
     
 
         // Toggle Mobile Menu
