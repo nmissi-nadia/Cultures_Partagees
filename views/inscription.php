@@ -31,11 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscri'])) {
     }
 
     try {
-        // Détermination de la classe en fonction du rôle
+       
         $user = null;
         if ($role_id === 2) { // Rôle Auteur
             $user = new Auteur($nom, $email, $motDePasse, $role_id);
-        } else { // Rôle Utilisateur par défaut
+        } else { 
             $user = new Utilisateur($nom, $email, $motDePasse, $role_id);
         }
     

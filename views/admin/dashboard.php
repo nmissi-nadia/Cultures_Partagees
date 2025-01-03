@@ -87,6 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-folder-open mr-3"></i>
                     <span>Catégories</span>
                 </button>
+                <div>
+                    <a href="../lougout.php" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Déconnexion</a>
+                </div>
             </nav>
         </div>
     </div>
@@ -209,9 +212,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <button name="modififerutilisateur" class="text-blue-600 hover:text-blue-900">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button name="supprimeutilis" class="text-red-600 hover:text-red-900">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                            <form action="supprimerUse.php" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');" style="display:inline;">
+                                                <input type="hidden" name="user_id" value="<?= $user['id_user'] ?>">
+                                                <button type="submit" name="supprimeutilis" class="text-red-600 hover:text-red-900">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
