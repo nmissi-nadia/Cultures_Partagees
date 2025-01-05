@@ -88,13 +88,13 @@ L'objectif principal est de créer une communauté dynamique et enrichissante au
 ## 📸 **Aperçus**
 
 ### **1. Page d'Accueil**
-![Page d'Accueil](Doc/image.png)
+![Page d'Accueil](Doc/image1.png)
 
 ### **2. Tableau de Bord Auteur**
-![Tableau de Bord Auteur](uploads/screenshots/dashboard_author.png)
+![Tableau de Bord Auteur](Doc/image.png)
 
 ### **3. Gestion des Articles pour Administrateur**
-![Gestion des Articles](uploads/screenshots/admin_articles.png)
+![Gestion des Articles](Doc/image3.png)
 
 ---
 

@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span class="px-3 py-1 rounded-full text-sm bg-green-100 text-green-800"><?= htmlspecialchars($user['status']) ?></span>
                     </p>
                 </div>
-                <button id="editProfileBtn" type="submit" class="ml-auto bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600">
+                <button id="editProfileBtn" type="button" class="ml-auto bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600">
                     Modifier le profil
                 </button>
             </div>
@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Membre depuis</span>
-                        <span id="joinDate" class="font-medium"><?= htmlspecialchars($user['date_inscription']) ?></span>
+                        <span id="joinDate" class="font-medium"><?= $user['date_inscription'] ?></span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Dernière connexion</span>
@@ -153,19 +153,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
     
 
+       // Données de l'utilisateur
+       const userData = {
+            nom: "<?= htmlspecialchars($user['nom']) ?>",
+            email: "<?= htmlspecialchars($user['email']) ?>",
+            bio: "<?= htmlspecialchars($user['bio']) ?>"
+        };
+
         // Initialisation de la page
         document.addEventListener('DOMContentLoaded', () => {
-            updateUserInterface();
             setupEventListeners();
         });
-
-        
 
         function setupEventListeners() {
             const editModal = document.getElementById('editModal');
             const editForm = document.getElementById('editForm');
 
-            // Ouvrir le modal
             document.getElementById('editProfileBtn').addEventListener('click', () => {
                 document.getElementById('editName').value = userData.nom;
                 document.getElementById('editEmail').value = userData.email;
@@ -173,27 +176,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 editModal.classList.remove('hidden');
             });
 
-            // Fermer le modal
             document.getElementById('cancelEdit').addEventListener('click', () => {
                 editModal.classList.add('hidden');
             });
 
-            // Soumettre le formulaire
             editForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                userData = {
-                    ...userData,
-                    nom: document.getElementById('editName').value,
-                    email: document.getElementById('editEmail').value,
-                    bio: document.getElementById('editBio').value
-                };
-                updateUserInterface();
-                editModal.classList.add('hidden');
-            });
+                const formData = new FormData(editForm);
+                fetch('update_user.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        
+                        userData.nom = document.getElementById('editName').value;
+                        userData.email = document.getElementById('editEmail').value;
+                        userData.bio = document.getElementById('editBio').value;
 
-            // Simuler le changement de photo
-            document.getElementById('editPhotoBtn').addEventListener('click', () => {
-                alert('Fonctionnalité de changement de photo à implémenter');
+                        document.getElementById('userName').textContent = userData.nom;
+                        document.getElementById('userEmail').textContent = userData.email;
+                        document.getElementById('userBio').textContent = userData.bio;
+
+editModal.classList.add('hidden');
+} else {
+alert('Erreur lors de la mise à jour du profil');
+}
+})
+.catch(error => {
+console.error('Error:', error);
+});
+});
+
+// Simuler le changement de photo
+document.getElementById('editPhotoBtn').addEventListener('click', () => {
+    alert('Fonctionnalité de changement de photo à implémenter');
             });
         }
     </script>

@@ -74,9 +74,9 @@
                         </button>
                         <!-- Dropdown menu -->
                         <div class="absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl hidden group-hover:block">
-                            <a href="/profil" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
-                            <a href="/mes-articles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes articles</a>
-                            <a href="/parametres" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Paramètres</a>
+                            <a href="../profil.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes articles</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Paramètres</a>
                             <hr class="my-2">
                             <a href="../lougout.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Déconnexion</a>
                         </div>
@@ -181,6 +181,7 @@
                 echo '<p class="text-gray-700 mb-4">' . htmlspecialchars(substr($article['contenu'], 0, 100)) . '...</p>';
                 echo '<p class="text-sm text-gray-600">Catégorie: ' . htmlspecialchars($article['categorie']) . '</p>';
                 echo '<p class="text-sm text-gray-600">Date: ' . htmlspecialchars($article['date_creation']) . '</p>';
+                echo '<a href="./detailsarticle.php?id=' . $article['id'] . '" class="block mb-0 mt-4 px-4 py-2 text-blue-700">Lire la suite ...</a>';
                 echo '</div>';
             }
         ?>

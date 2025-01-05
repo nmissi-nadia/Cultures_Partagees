@@ -96,7 +96,7 @@ try {
                         </button>
                         <!-- Dropdown menu -->
                         <div class="absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl hidden group-hover:block">
-                            <a href="/profil" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
+                            <a href="../profil.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
                             <a href="/mes-articles" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes articles</a>
                             <a href="/parametres" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Paramètres</a>
                             <hr class="my-2">
@@ -122,7 +122,7 @@ try {
                     <a href="/auteurs" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Auteurs</a>
                     <a href="/a-propos" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">À propos</a>
                     <hr class="my-2">
-                    <a href="/profil" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Mon compte</a>
+                    <a href="../profil.php" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Mon compte</a>
                     <a href="./auteur.php" class="block px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Publier</a>
                     <a href="../lougout.php" class="block px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Deconnexion</a>
                 </div>
@@ -132,7 +132,7 @@ try {
 
     <!-- Contenu principal -->
     <main class="container max-w-7xl mx-auto my-8 px-4 py-8">
-    <span class="mr-4">Bienvenue, <?= htmlspecialchars($_SESSION['nom']) ?></span>
+    <span class="mr-4 text-2xl color-purple">Bienvenue, <?= htmlspecialchars($_SESSION['nom']) ?></span>
 
         <div class="mb-8  mt-8">
             <div class="flex flex-col md:flex-row gap-4">
